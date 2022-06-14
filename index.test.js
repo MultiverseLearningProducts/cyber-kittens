@@ -115,8 +115,16 @@ describe('Endpoints', () => {
                 expect(response.body).toEqual(testKittenData);
             });
         });
+        describe('POST /kittens', () => {
+            it('should create a new cat', async () => {
+                const newKittenData = { name: 'Bobby', age: 3, color: 'golden' };
+                const response = await request(app)
+                    .post('/kittens')
+                    .set('Authorization', `Bearer ${token}`)
+                    .send(newKittenData);
+                expect(response.status).toBe(201);
+                expect(response.body).toEqual(newKittenData);
+            });
+        });
     });
-        
-
-
 });
