@@ -19,6 +19,9 @@ app.get('/', async (req, res, next) => {
   }
 });
 
+// Verifies token with jwt.verify and sets req.user
+// TODO - Create authentication middleware
+
 // POST /register
 // OPTIONAL - takes req.body of {username, password} and creates a new user with the hashed password
 
