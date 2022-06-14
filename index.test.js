@@ -109,10 +109,24 @@ describe('Endpoints', () => {
         describe('GET /kittens/:id', () => {
             it('should return a single cat', async () => {
                 const response = await request(app)
-                    .get('/kittens/1')
+                    .get(`/kittens/${kitten.id}`)
                     .set('Authorization', `Bearer ${token}`);
                 expect(response.status).toBe(200);
                 expect(response.body).toEqual(testKittenData);
+            });
+            it('should return 401 if no token', async () => {
+                const response = await request(app)
+                .get(`/kittens/${kitten.id}`);
+                expect(response.status).toBe(401);
+                expect(response.text).toBe('Unauthorized');
+            });
+            it('should return 401 if kitten not owned by user', async () => {
+                const {token, user} = await createTestUser({username: 'notbuster', password: 'notbustthis'});
+                const response = await request(app)
+                    .get(`/kittens/${kitten.id}`)
+                    .set('Authorization', `Bearer ${token}`);
+                expect(response.status).toBe(401);
+                expect(response.text).toBe('Unauthorized');
             });
         });
         describe('POST /kittens', () => {
