@@ -139,6 +139,14 @@ describe('Endpoints', () => {
                 expect(response.status).toBe(201);
                 expect(response.body).toEqual(newKittenData);
             });
+            it('should return 401 if no token', async () => {
+                const newKittenData = { name: 'Bobby', age: 3, color: 'golden' };
+                const response = await request(app)
+                    .post('/kittens')
+                    .send(newKittenData);
+                expect(response.status).toBe(401);
+                expect(response.text).toBe('Unauthorized');
+            });
         });
         describe('DELETE /kittens/:id', () => {
             it('should delete a cat', async () => {
@@ -148,6 +156,20 @@ describe('Endpoints', () => {
                 expect(response.status).toBe(204);
                 const deleted = await Kitten.findByPk(kitten.id);
                 expect(deleted).toBeFalsy();
+            });
+            it('should return 401 if no token', async () => {
+                const response = await request(app)
+                    .delete(`/kittens/${kitten.id}`);
+                expect(response.status).toBe(401);
+                expect(response.text).toBe('Unauthorized');
+            });
+            it('should return 401 if kitten not owned by user', async () => {
+                const {token, user} = await createTestUser({username: 'notbuster', password: 'notbustthis'});
+                const response = await request(app)
+                    .delete(`/kittens/${kitten.id}`)
+                    .set('Authorization', `Bearer ${token}`);
+                expect(response.status).toBe(401);
+                expect(response.text).toBe('Unauthorized');
             });
         });
     });
