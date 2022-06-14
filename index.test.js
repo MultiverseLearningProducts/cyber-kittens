@@ -66,12 +66,12 @@ describe('Endpoints', () => {
                 });
             });
             it('should create user with username', async () => {
-                const foundUser = await User.findOne({ where: { username: 'bobbysmiles' } });
+                const foundUser = await User.findOne({ where: { username: 'buster' } });
                 expect(foundUser).toBeTruthy();
-                expect(foundUser.username).toBe('bobbysmiles');
+                expect(foundUser.username).toBe('buster');
             });
             it('should hash password', async () => {
-                const foundUser = await User.findOne({ where: { username: 'bobbysmiles' } });
+                const foundUser = await User.findOne({ where: { username: 'buster' } });
                 expect(foundUser).toBeTruthy();
                 expect(foundUser.password).not.toBe(testUserData.password);
                 expect(foundUser.password).toEqual(expect.stringMatching(/^\$2[ayb]\$.{56}$/));
@@ -90,7 +90,7 @@ describe('Endpoints', () => {
                 const incorrectLoginResponse = await request(app)
                     .post('/login')
                     .send({
-                        username: 'bobbysmiles',
+                        username: 'buster',
                         password: 'notright'
                     })
                     .catch(err => console.error(err));
