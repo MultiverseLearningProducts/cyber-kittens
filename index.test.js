@@ -50,8 +50,8 @@ describe('Endpoints', () => {
             expect(registerResponse.status).toBe(200);
             expect(registerResponse.text).toBe(`
       <h1>Welcome to Cyber Kittens!</h1>
-      <p>Cats are available at <a href="/cats/1">/cats/:id</a></p>
-      <p>Create a new cat at <b><code>POST /cats</code></b> and delete one at <b><code>DELETE /cats/:id</code></b></p>
+      <p>Cats are available at <a href="/kittens/1">/kittens/:id</a></p>
+      <p>Create a new cat at <b><code>POST /kittens</code></b> and delete one at <b><code>DELETE /kittens/:id</code></b></p>
       <p>Log in via POST /login or register via POST /register</p>
     `);
         });
@@ -102,15 +102,15 @@ describe('Endpoints', () => {
         });
     });
 
-    describe('/cats endpoints', () => {
+    describe('/kittens endpoints', () => {
         beforeEach(async () => {
             await sequelize.sync({ force: true }); // recreate db
             ({token, user} = await createTestUser({...testUserData, catId: testKittenData.id}));
         });
-        describe('GET /cats/:id', () => {
+        describe('GET /kittens/:id', () => {
             it('should return a single cat', async () => {
                 const response = await request(app)
-                    .get('/cats/1')
+                    .get('/kittens/1')
                     .set('Authorization', `Bearer ${token}`);
                 expect(response.status).toBe(200);
                 expect(response.body).toEqual(kittens[0]);

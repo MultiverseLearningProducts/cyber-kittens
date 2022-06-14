@@ -9,8 +9,8 @@ app.get('/', async (req, res, next) => {
   try {
     res.send(`
       <h1>Welcome to Cyber Kittens!</h1>
-      <p>Cats are available at <a href="/cats/1">/cats/:id</a></p>
-      <p>Create a new cat at <b><code>POST /cats</code></b> and delete one at <b><code>DELETE /cats/:id</code></b></p>
+      <p>Cats are available at <a href="/kittens/1">/kittens/:id</a></p>
+      <p>Create a new cat at <b><code>POST /kittens</code></b> and delete one at <b><code>DELETE /kittens/:id</code></b></p>
       <p>Log in via POST /login or register via POST /register</p>
     `);
   } catch (error) {
@@ -25,13 +25,13 @@ app.get('/', async (req, res, next) => {
 // POST /login
 // OPTIONAL - takes req.body of {username, password}, finds user by username, and compares the password with the hashed version from the DB
 
-// GET /cats/:id
+// GET /kittens/:id
 // TODO - takes an id and returns the cat with that id
 
-// POST /cats
+// POST /kittens
 // TODO - takes req.body of {name, age, color} and creates a new cat with the given name, age, and color
 
-// DELETE /cats/:id
+// DELETE /kittens/:id
 // TODO - takes an id and deletes the cat with that id
 
 // error handling middleware, so failed tests receive them
