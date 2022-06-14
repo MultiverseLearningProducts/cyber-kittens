@@ -1,27 +1,33 @@
 const kittens = [
   {
-    username: "Kit-Kat",
-    password: "ilikechocolate"
+    name: "Kit-Kat",
+    color: "brown",
+    age: 6,
   },
   {
-    username: "Cindy Clawford",
-    password: "clawsamany"
+    name: "Cindy Clawford",
+    color: "white",
+    age: 6,
   },
   {
-    username: "Clawdia Catzy",
-    password: "hurtfulhugs"
+    name: "Clawdia Catzy",
+    color: "silver",
+    age: 4,
   },
   {
-    username: "Ricky Ticky Tabby",
-    password: "callmetabs"
+    name: "Ricky Ticky Tabby",
+    color: "black",
+    age: 7,
   },
   {
-    username: "Bitty Billy Bubbles",
-    password: "lotsabubs"
+    name: "Bitty Billy Bubbles",
+    color: "grey",
+    age: 1,
   },
   {
-    username: "Quimby mcQuimbleson",
-    password: "quivermytimbers"
+    name: "Quimby mcQuimbleson",
+    color: "orange",
+    age: 2,
   }
 ];
 

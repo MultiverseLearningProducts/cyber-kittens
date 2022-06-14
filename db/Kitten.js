@@ -1,8 +1,9 @@
 const {Sequelize, sequelize} = require('./db');
 
 const Kitten = sequelize.define('kitten', {
-  username: Sequelize.STRING,
-  password: Sequelize.STRING
+  name: Sequelize.STRING,
+  color: Sequelize.STRING,
+  age: Sequelize.INTEGER
 });
 
 module.exports = { Kitten };

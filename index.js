@@ -20,10 +20,19 @@ app.get('/', async (req, res, next) => {
 });
 
 // POST /register
-// OPTIONAL TODO - takes req.body of {username, password} and creates a new user with the hashed password
+// OPTIONAL - takes req.body of {username, password} and creates a new user with the hashed password
 
 // POST /login
-// OPTIONAL TODO - takes req.body of {username, password}, finds user by username, and compares the password with the hashed version from the DB
+// OPTIONAL - takes req.body of {username, password}, finds user by username, and compares the password with the hashed version from the DB
+
+// GET /cats/:id
+// TODO - takes an id and returns the cat with that id
+
+// POST /cats
+// TODO - takes req.body of {name, age, color} and creates a new cat with the given name, age, and color
+
+// DELETE /cats/:id
+// TODO - takes an id and deletes the cat with that id
 
 // we export the app, not listening in here, so that we can run tests
 module.exports = app;
