@@ -126,5 +126,15 @@ describe('Endpoints', () => {
                 expect(response.body).toEqual(newKittenData);
             });
         });
+        describe('DELETE /kittens/:id', () => {
+            it('should delete a cat', async () => {
+                const response = await request(app)
+                    .delete(`/kittens/${kitten.id}`)
+                    .set('Authorization', `Bearer ${token}`);
+                expect(response.status).toBe(204);
+                const deleted = await Kitten.findByPk(kitten.id);
+                expect(deleted).toBeFalsy();
+            });
+        });
     });
 });
