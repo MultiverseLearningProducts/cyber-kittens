@@ -15,18 +15,16 @@ const {kittens} = require('./db/seedData');
 const createTestUser = async (userData) => {
     const hashed = await bcrypt.hash(userData.password, SALT_COUNT);
     user = await User.create({ username: userData.username, password: hashed });
-    if(userData.catId) {
-        await user.setKitten(userData.catId);
-    }
     const {id, username: createdUsername} = user;
     token = jwt.sign({id, username: createdUsername}, JWT_SECRET);
     return {user, token};
 }
 
 describe('Endpoints', () => {
-    const testKittenData = { username: 'Katy Purry', password: 'iamasinga' };
+    const testKittenData = { name: 'Katy Purry', age: 3, color: 'golden' };
     const testUserData = { username: 'buster', password: 'bustthis' };
     let user;
+    let kitten;
     let token;
     let registerResponse;
     let loginResponse;
@@ -105,7 +103,8 @@ describe('Endpoints', () => {
     describe('/kittens endpoints', () => {
         beforeEach(async () => {
             await sequelize.sync({ force: true }); // recreate db
-            ({token, user} = await createTestUser({...testUserData, catId: testKittenData.id}));
+            ({token, user} = await createTestUser(testUserData));
+            kitten = await Kitten.create({...testKittenData, ownerId: user.id});
         });
         describe('GET /kittens/:id', () => {
             it('should return a single cat', async () => {
@@ -113,7 +112,7 @@ describe('Endpoints', () => {
                     .get('/kittens/1')
                     .set('Authorization', `Bearer ${token}`);
                 expect(response.status).toBe(200);
-                expect(response.body).toEqual(kittens[0]);
+                expect(response.body).toEqual(testKittenData);
             });
         });
     });
