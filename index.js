@@ -1,10 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
-require('dotenv').config();
 const app = express();
 const { User, Kitten } = require('./db');
-const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET;
+
 
 
 app.use(express.json());
@@ -25,13 +23,15 @@ app.get('/', async (req, res, next) => {
 });
 
 // Verifies token with jwt.verify and sets req.user
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = process.env;
+require('dotenv').config();
 // TODO - Create authentication middleware
 const setUser = async (req, res, next) => {
-  try{
+
   const auth = req.header("Authorization");
 
   if (!auth) {
-       res.sendStatus(401);
     next();
   } else {
     const [, token] = auth.split(" ");
@@ -40,35 +40,29 @@ const setUser = async (req, res, next) => {
     
     next();
   }
-}   catch (error) {
-  console.error(error);
-  next(error);
-}}
+
+}
 // POST /register
 // OPTIONAL - takes req.body of {username, password} and creates a new user with the hashed password
 
-app.post('/register', async (req, res) => {
-try {
-  let salt = 10;
+app.post('/register', async (req, res, next) => {
+
+
   const {username, password} = req.body;
-  const hashPw = await bcrypt.hash(password, salt);
+  const hashPw = await bcrypt.hash(password, 8);
   const createUser = await User.create({username, password: hashPw});
-  const token = jwt.sign( {id: createUser.id, username: createUser.username}, JWT_SECRET);
-  res.send({message: "success", token });
-} catch (error) {
-  console.error(error);
-  next(error);
-}
-});
+  const token = jwt.sign({id: createUser.id, username: createUser.username}, JWT_SECRET);
+  res.send({message: "success", token});
+} );
 
 
 
 // POST /login
 // OPTIONAL - takes req.body of {username, password}, finds user by username, and compares the password with the hashed version from the DB
-app.post('/login', setUser, async (req, res, next) => {
-  try {
+app.post('/login', async (req, res, next) => {
+ 
     const {username, password} = req.body;
-    const findUser = await User.findOne( {where: {username}} );
+    const findUser = await User.findOne({where: {username}});
     // We want the password to match findUser password
     const passwordMatches = await bcrypt.compare(password, findUser.password);
     
@@ -76,68 +70,71 @@ app.post('/login', setUser, async (req, res, next) => {
     const {id, username } = findUser;
     const token = jwt.sign( {id, username}, JWT_SECRET);
     res.send( {message: "success", token});
-  }else {
-    res.sendStatus(401).send("user not found");
-  }
+  }else{
+    res.sendStatus(401)
   
-  } catch (error) {
-    console.error(error);
-    next(error);
+  
+  
   }
   });
 // GET /kittens/:id
 // TODO - takes an id and returns the cat with that id
-app.get("/kittens/:id", setUser, async (req, res, next) => {
-  const kittenId = req.params.id;
-  try {
-    const kitten = await Kitten.findByPk(kittenId);
+app.get("/kittens/:id",setUser,  async (req, res, next) => {
+if (!req.user) {
+      res.sendStatus(401);
+      } else {  
+        const kittenId = req.params.id;
 
-    if (!req.user) {
-      res.statusCode(401);
-    } else {
-      res.send(kitten);
-    }
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
+        const kitten = await Kitten.findByPk(kittenId);
+        
+        const { age, color, name } = kitten
+      
+        if (!kitten || kitten.ownerId != req.user.id) {
+          res.sendStatus(401)
+        } else {
+          res.send({
+            age,
+            color,
+            name   		})
+          }
+        }
+      })
 // POST /kittens
 // TODO - takes req.body of {name, age, color} and creates a new cat with the given name, age, and color
-app.post("/kittens", setUser, async (req, res, next) => {
-  try {
-    if (!req.user) {
-      res.statusCode(401);
-    } else {
-      const ownerId = req.user.id;
-      const { name, age, color } = req.body;
-      const newKitten = await Kitten.create({ name, age, color, ownerId });
+app.post("/kittens", setUser, async (req, res) => {
 
-      res.status(201).send(newKitten);
-    }
-  } catch (error) {
-    console.error(error);
-    next(error);
+    if (!req.user) {
+      res.sendStatus(401);
+    } else {
+      const { name, age, color } = req.body
+
+      const newKitten = await Kitten.create({ name, age, color })
+  
+      res.status(201).send({
+        name: newKitten.name,
+        age: newKitten.age,
+        color: newKitten.color
+      })
+    
   }
 });
 // DELETE /kittens/:id
 // TODO - takes an id and deletes the cat with that id
 app.delete("/kittens/:id", setUser, async (req, res, next) => {
-  try {
-    const kitten = await Kitten.findByPk(req.params.id);
+	if (!req.user) {
+		res.sendStatus(401)
+	} else {
+		const kittenID = req.params.id
+		const foundKitten = await Kitten.findByPk(kittenID)
 
-    if (req.user.id != kitten.ownerId) {
-      res.statusCode(401);
-    } else {
-      await kitten.destroy();
-      res.sendStatus(204);
+		if (!foundKitten || foundKitten.ownerId != req.user.id) {
+			res.send(401)
+		} else {
+			await foundKitten.destroy()
+			res.sendStatus(204)
     }
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
+    }});
+
 // error handling middleware, so failed tests receive them
 app.use((error, req, res, next) => {
   console.error('SERVER ERROR: ', error);
